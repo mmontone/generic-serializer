@@ -15,6 +15,9 @@
    #:with-list
    #:with-list-member
    #:add-list-member
+   #:with-vector
+   #:with-vector-member
+   #:add-vector-member
    #:set-attribute
    #:name
    #:attributes

@@ -68,3 +68,17 @@
                             &body body)
   "Serializes a list member"
   `(call-with-list-member ,serializer ,name (lambda () ,@body) ,stream))
+
+(defmacro with-vector
+    ((name &key (serializer '*serializer*)
+             (stream '*serializer-output*))
+     &body body)
+  "Serializes an vector of objects"
+  `(call-with-vector ,serializer ,name (lambda () ,@body) ,stream))
+
+(defmacro with-vector-member ((name
+                               &key (serializer '*serializer*)
+                                 (stream '*serializer-output*))
+                              &body body)
+  "Serializes a list member"
+  `(call-with-vector-member ,serializer ,name (lambda () ,@body) ,stream))

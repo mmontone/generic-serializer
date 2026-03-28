@@ -293,6 +293,8 @@
                         :stream stream)
     (apply #'serialize value serializer stream args)))
 
+;; lists
+
 (defmethod call-with-list ((serializer (eql :json)) name body stream)
   (declare (ignore name))
   (json:with-array (stream)
@@ -337,4 +339,52 @@
   "Serializes a list member"
   (with-list-member (name :serializer serializer
                           :stream stream)
+    (serialize value serializer stream)))
+
+;; vector
+
+(defmethod call-with-vector ((serializer (eql :json)) name body stream)
+  (declare (ignore name))
+  (json:with-array (stream)
+    (funcall body)))
+
+(defmethod call-with-vector ((serializer (eql :xml)) name body stream)
+  (declare (ignore name stream))
+  (funcall body))
+
+(defmethod call-with-vector ((serializer (eql :html)) name body stream)
+  (cl-who:with-html-output (html stream)
+    (:ol (funcall body))))
+
+(defmethod call-with-vector ((serializer (eql :sexp)) name body stream)
+  (format stream "#(")
+  (funcall body)
+  (format stream ")"))
+
+(defmethod call-with-vector-member ((serializer (eql :json)) name body stream)
+  (declare (ignore name))
+  (json:as-array-member (stream)
+    (funcall body)))
+
+(defmethod call-with-vector-member ((serializer (eql :xml)) name body stream)
+  (with-object (name :serializer serializer
+                     :stream stream)
+    (funcall body)))
+
+(defmethod call-with-vector-member ((serializer (eql :html)) name body stream)
+  (declare (ignore name))
+  (cl-who:with-html-output (html stream)
+    (:li
+     (funcall body))))
+
+(defmethod call-with-vector-member ((serializer (eql :sexp)) name body stream)
+  (declare (ignore name))
+  (funcall body)
+  (format stream " "))
+
+(defun add-vector-member (name value &key (serializer *serializer*)
+                                       (stream *serializer-output*))
+  "Serializes a vector member"
+  (with-vector-member (name :serializer serializer
+                            :stream stream)
     (serialize value serializer stream)))
